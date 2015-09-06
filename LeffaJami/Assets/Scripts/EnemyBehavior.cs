@@ -289,16 +289,17 @@ public class EnemyBehavior : MonoBehaviour {
     {
         switch (integer)
         {
-            case type.basic:
+            case 0:
                 enemytype = type.basic;
                 break;
-            case type.puukko:
+            case 1:
                 enemytype = type.puukko;
                 break;
-            case tpe.shield:
+            case 2:
                 enemytype = type.shield;
                 break;
             default:
+                enemytype = type.basic;
                 break;
         }
     }
