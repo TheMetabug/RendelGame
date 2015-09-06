@@ -84,14 +84,17 @@ public class PlayerScript : MonoBehaviour
 	{	
 		Vector3 punchPos;
 		Vector3 buildUpPos;
+		HandScript hand;
 
 		if (isRightSide) {
 			punchPos = new Vector3(startPosition.x + 0.2f, startPosition.y + 0.2f, startPosition.z);
 			buildUpPos = new Vector3(startPosition.x - 0.2f, startPosition.y - 0.2f, startPosition.z);
+			hand = transform.GetChild(0).GetComponent<HandScript>();
 			print("right punch");
 		} else {
 			punchPos = new Vector3(startPosition.x - 0.2f, startPosition.y + 0.2f, startPosition.z);
 			buildUpPos = new Vector3(startPosition.x + 0.2f, startPosition.y - 0.2f, startPosition.z);
+			hand = transform.GetChild(1).GetComponent<HandScript>();
 			print("left punch");
 		}
 
@@ -105,6 +108,8 @@ public class PlayerScript : MonoBehaviour
 
 		bool isGoingToPunchPosition = true;
 		bool isNotOnStartPos = true;
+
+		hand.changeHandState (HandScript.handStates.build);
 		
 		while (isPunchingEnemy) {
 			if (isGoingToPunchPosition) {
@@ -115,9 +120,11 @@ public class PlayerScript : MonoBehaviour
 			
 			if (Vector3.Distance (transform.localPosition, buildUpPos) < 0.1f && isGoingToPunchPosition) {
 				isGoingToPunchPosition = false;
+				isPunchingEnemy = false;
+				hand.changeHandState (HandScript.handStates.punch);
 			}		
 			if (Vector3.Distance (transform.localPosition, punchPos) < 0.1f && !isGoingToPunchPosition) {
-				isPunchingEnemy = false;
+				//isPunchingEnemy = false;
 			}
 			yield return null;
 		}
@@ -131,12 +138,15 @@ public class PlayerScript : MonoBehaviour
 			
 			if (Vector3.Distance (transform.localPosition, buildUpPos) < 0.1f && isGoingToPunchPosition) {
 				isGoingToPunchPosition = false;
+				isPunchingAir = false;
+				hand.changeHandState (HandScript.handStates.punch);
 			}		
 			if (Vector3.Distance (transform.localPosition, punchPos) < 0.1f && !isGoingToPunchPosition) {
-				isPunchingAir = false;
+				//isPunchingAir = false;
 			}
 			yield return null;
 		}
+
 
 		// Return to start position
 		while (isNotOnStartPos) {
@@ -148,7 +158,8 @@ public class PlayerScript : MonoBehaviour
 
 			yield return null;
 		}
-
+		
+		hand.changeHandState (HandScript.handStates.ready);
 		isPunching = false;
 		hitEnemy = false;
 

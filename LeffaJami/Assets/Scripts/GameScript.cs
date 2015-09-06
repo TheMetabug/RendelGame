@@ -104,7 +104,8 @@ public class GameScript : MonoBehaviour
 		while (playerObj.isPunchingEnemy) {
 			yield return null;
 		}
-		enemy.Damage(1);
+		//enemy.Damage(1);
+		HitEnemy (enemy);
 		yield return null;
 	}
 	IEnumerator checkIfPlayerHitsEnemyWhileMissing(EnemyBehavior enemy)
@@ -113,13 +114,35 @@ public class GameScript : MonoBehaviour
 			yield return null;
 		}
 		if (enemy.inPosition) {
-			enemy.Damage (1);
+			//enemy.Damage (1);
+			HitEnemy(enemy);
 		}
 		yield return null;
 	}
 
-
-
+	private void HitEnemy(EnemyBehavior enemy)
+	{
+		if (Vector2.Distance(Input.mousePosition , Camera.main.WorldToScreenPoint(transform.position)) < 250) {
+			switch (enemy.enemytype)
+			{
+			case EnemyBehavior.type.basic:
+				enemy.Damage(1);
+				break;
+			case EnemyBehavior.type.puukko:
+				if(enemy.staggering) enemy.Damage(1);
+				break;
+			case EnemyBehavior.type.shield:
+				if (enemy.staggering) enemy.Damage(1);
+				else { enemy.staggering = true; }
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	
+	
+	
 	public void GameOver()
 	{
 		manager.SwitchState (2);
