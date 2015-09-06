@@ -43,6 +43,10 @@ public class PlayerScript : MonoBehaviour
 
 	public void GetDamage()
 	{
+		health--;
+		if (health <= 0) {
+			Death();
+		}
 		StartCoroutine ("HurtAnimation");
 	}
 
@@ -51,6 +55,7 @@ public class PlayerScript : MonoBehaviour
 		if (!isDying && !isDead) {
 			isDying = true;
 			StartCoroutine("DeathAnimation");
+
 		}
 	}
 

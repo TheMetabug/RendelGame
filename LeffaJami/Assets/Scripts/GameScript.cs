@@ -36,6 +36,7 @@ public class GameScript : MonoBehaviour
 		GetEnemies ();
         score += 1 * Time.deltaTime;
         scoreText.text = "Score: " + score;
+		GameVariables.score = score;
 	}
 
 	private void GetEnemies()

@@ -72,11 +72,23 @@ public class Highscore : MonoBehaviour
     {
         for (int i = 0; i < 15; i++)
         {
-			GUI.Label(new Rect(10, 100 + 55 * i, 200, 20), (i+1) + ". " + names[i], styleForList);
-			GUI.Label(new Rect(250, 100 + 55 * i, 100, 20), highscores[i].ToString(), styleForList);
+			if(names[i] != "default")
+			{
+				GUI.Label(new Rect(10, 100 + 55 * i, 200, 20), (i+1) + ". " + names[i], styleForList);
+				GUI.Label(new Rect(250, 100 + 55 * i, 100, 20), highscores[i].ToString(), styleForList);
+			}
         }
     }
 
+	void OnEnable()
+	{
+		if (GameVariables.score > 0) {
+
+			CheckScore((int)GameVariables.score, PlayerPrefs.GetString("Player"));
+
+			GameVariables.score = 0;
+		}
+	}
 
     void ResetScore()
     {

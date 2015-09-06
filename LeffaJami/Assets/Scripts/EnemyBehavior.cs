@@ -24,6 +24,7 @@ public class EnemyBehavior : MonoBehaviour {
     public float timeBetweenSprites_walk = 0.5f;
     private float walkTimer = 0;
     private int walkIndex = 0;
+	private int spriteIndex = 0;
 
     public enum type
     {
@@ -42,8 +43,9 @@ public class EnemyBehavior : MonoBehaviour {
                 hit = false;
                 speed = 8.0f;
                 hitspeed = 3.0f; // Ei käytetä tällä hetkellä missään
-                delay = 0.5f;
+                delay = 1.5f;
                 staggering = false;
+			spriteIndex = 0;
                 break;
             case type.puukko:
                 health = 1;
@@ -51,8 +53,9 @@ public class EnemyBehavior : MonoBehaviour {
                 speed = 7.0f;
                 hitspeed = 3.0f; // Vois olla hyvä ottaa käyttöön
                 delay = 0.75f;
-                stagdelay = 0.25f;
+                stagdelay = 1.25f;
                 staggering = false;
+			spriteIndex = 2;
                 break;
             case type.shield:
                 health = 1;
@@ -60,8 +63,9 @@ public class EnemyBehavior : MonoBehaviour {
                 speed = 4.0f;
                 hitspeed = 3.0f; // Sais eri vihollisille erimittaiset lyöntivälit
                 delay = 1.0f;
-                stagdelay = 0.5f;
+                stagdelay = 1.5f;
                 staggering = false;
+			spriteIndex = 4;
                 break;
             default:
                 break;
@@ -109,43 +113,52 @@ public class EnemyBehavior : MonoBehaviour {
                             stagdelay = 0;
                         }
                     }
-                    else { delay -= Time.deltaTime; }
+                    else {
+					delay -= Time.deltaTime;
+					GetComponent<SpriteRenderer> ().color = Color.white;}
 
                     if (delay <= 0)
                     {
                         HitDammit();
-                        delay = 0.5f;
+                        delay = 1.5f;
                     }
                     break;
                 case type.puukko:
                     if (staggering)
                     {
+						GetComponent<SpriteRenderer> ().color = Color.blue;
                         stagdelay -= Time.deltaTime;
                         if (stagdelay <= 0)
                         {
                             staggering = false;
-                            stagdelay = 0.25f;
+                            stagdelay = 1.25f;
                         }
                     }
-                    else { delay -= Time.deltaTime; }
+                    else { 
+					delay -= Time.deltaTime; 
+					GetComponent<SpriteRenderer> ().color = Color.white;}
 
                     if (delay <= 0)
                     {
                         HitDammit();
-                        delay = 0.5f;
+                        delay = 1.5f;
                     }
                     break;
                 case type.shield:
                     if (staggering)
                     {
+					
+						GetComponent<SpriteRenderer> ().color = Color.blue;
                         stagdelay -= Time.deltaTime;
                         if (stagdelay <= 0)
                         {
                             staggering = false;
-                            stagdelay = 0.5f;
+                            stagdelay = 1.5f;
                         }
                     }
-                    else { delay -= Time.deltaTime; }
+				else {
+					delay -= Time.deltaTime; 
+					GetComponent<SpriteRenderer> ().color = Color.white;}
 
                     if (delay <= 0)
                     {
@@ -223,10 +236,10 @@ public class EnemyBehavior : MonoBehaviour {
                 {
                     staggering = false;
                     target.GetComponent<PlayerScript>().GetDamage();
-                    Debug.Log("Now, that's just embarrassing. PUUKKO");
+					Debug.Log("Now, that's just embarrassing. PUUKKO");
+					StartCoroutine ("PunchAnim");
                 }
                 else { staggering = true; }
-                StartCoroutine ("PunchAnim");
                 break;
             case type.shield:
                 if (!target.GetComponent<PlayerScript>().isDodging)
@@ -270,12 +283,12 @@ public class EnemyBehavior : MonoBehaviour {
         {
             walkIndex++;
 
-            if (sprites.Length <= walkIndex)
+            if (walkIndex > 1)
             {
                 walkIndex = 0;
             }
 
-            gameObject.GetComponent<SpriteRenderer>().sprite = sprites[walkIndex];
+			gameObject.GetComponent<SpriteRenderer>().sprite = sprites[walkIndex + spriteIndex];
             walkTimer = 0;
         }
     }
@@ -302,15 +315,23 @@ public class EnemyBehavior : MonoBehaviour {
         {
             case 0:
                 enemytype = type.basic;
+			spriteIndex = 0;
+			gameObject.GetComponent<SpriteRenderer>().sprite = sprites[walkIndex + spriteIndex];
                 break;
             case 1:
                 enemytype = type.puukko;
+			spriteIndex = 2;
+			gameObject.GetComponent<SpriteRenderer>().sprite = sprites[walkIndex + spriteIndex];
                 break;
             case 2:
                 enemytype = type.shield;
+			spriteIndex = 4;
+			gameObject.GetComponent<SpriteRenderer>().sprite = sprites[walkIndex + spriteIndex];
                 break;
             default:
                 enemytype = type.basic;
+			spriteIndex = 0;
+			gameObject.GetComponent<SpriteRenderer>().sprite = sprites[walkIndex + spriteIndex];
                 break;
         }
     }
