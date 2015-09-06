@@ -1,23 +1,18 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
-
+using System.Collections.Generic;
 public class MenuScript : MonoBehaviour {
 
 	public GameManagerScript manager;
-
-	void Start ()
-	{
-	
-	}
-
-	void Update ()
-	{
-		if (Input.GetMouseButtonDown (0)) 
-		{   
-			if (Input.mousePosition.x - Camera.main.WorldToScreenPoint (transform.position).x < 2500) 
-			{
-				manager.SwitchState (1);
-			}
-		}
-	}
+    public bool startScreen;
+    public Text playerName;
+    public string name;
+    void setName()
+    {
+        
+        PlayerPrefs.SetString("Player", playerName.text);
+        PlayerPrefs.Save();
+        print(playerName.text);
+    }
 }
