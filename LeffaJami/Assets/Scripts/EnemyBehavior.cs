@@ -7,68 +7,185 @@ public class EnemyBehavior : MonoBehaviour {
     public float speed;
     public float hitspeed;
     public float delay;
+    public float stagdelay;
     public bool hit;
     public bool inPosition;
     public bool flipflop;
+    public bool staggering;
 
-	public Vector3 offsetOfKillZone = new Vector3();
+    public Vector3 offsetOfKillZone = new Vector3();
 
     public GameObject killingzone;
     public GameObject target;
 
-	public Sprite[] sprites = new Sprite[0];
-	public float timeBetweenSprites_walk = 0.5f; 
-	private float walkTimer = 0;
-	private int walkIndex = 0;
+    public Sprite[] sprites = new Sprite[0];
+    public float timeBetweenSprites_walk = 0.5f;
+    private float walkTimer = 0;
+    private int walkIndex = 0;
+
+    public enum type
+    {
+        basic = 0,
+        puukko = 1,
+        shield = 2,
+    }
+
+    public type enemytype;
 
 	void Start () {
-        health = 1;
-        hit = false;
-        speed = 8.0f;
-        hitspeed = 3.0f;
-        delay = 0.5f;
+        switch (enemytype)
+        {
+            case type.basic:
+                health = 1;
+                hit = false;
+                speed = 8.0f;
+                hitspeed = 3.0f; // Ei käytetä tällä hetkellä missään
+                delay = 0.5f;
+                staggering = false;
+                break;
+            case type.puukko:
+                health = 1;
+                hit = false;
+                speed = 7.0f;
+                hitspeed = 3.0f; // Vois olla hyvä ottaa käyttöön
+                delay = 0.75f;
+                stagdelay = 0.25f;
+                staggering = false;
+                break;
+            case type.shield:
+                health = 1;
+                hit = false;
+                speed = 4.0f;
+                hitspeed = 3.0f; // Sais eri vihollisille erimittaiset lyöntivälit
+                delay = 1.0f;
+                stagdelay = 0.5f;
+                staggering = false;
+                break;
+            default:
+                break;
+        }
+
 
         killingzone = GameObject.FindGameObjectWithTag("KZ");
         target = GameObject.FindGameObjectWithTag("Player");
     }
 
-	void Update () 
-	{
-        if (inPosition) 
-		{
+	void Update () {
+        if (inPosition) {
             //foreach (Touch touch in Input.touches) {
-           /* if(Input.GetMouseButtonDown(0)) 
-			{    
-				if (Mathf.Abs(Input.mousePosition.x - Camera.main.WorldToScreenPoint(transform.position).x) < 140) 
-				{
-                    Damage(1);
+            if(Input.GetMouseButtonDown(0)) {    
+                if (Vector2.Distance(/*touch.position*/Input.mousePosition , Camera.main.WorldToScreenPoint(transform.position)) < 250) {
+                    switch (enemytype)
+                    {
+                        case type.basic:
+                            Damage(1);
+                            break;
+                        case type.puukko:
+                            if(staggering) Damage(1);
+                            break;
+                        case type.shield:
+                            if (staggering) Damage(1);
+                            else { staggering = true; }
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }*/
-
-            delay -= Time.deltaTime;
-
-            if (delay <= 0)
-            {
-                HitDammit();
-                delay = 1.5f;
             }
 
+            switch (enemytype)
+            {
+                case type.basic:
+                    if (staggering)
+                    {
+                        stagdelay -= Time.deltaTime;
+                        if (stagdelay <= 0)
+                        {
+                            staggering = false;
+                            stagdelay = 0;
+                        }
+                    }
+                    else { delay -= Time.deltaTime; }
+
+                    if (delay <= 0)
+                    {
+                        HitDammit();
+                        delay = 0.5f;
+                    }
+                    break;
+                case type.puukko:
+                    if (staggering)
+                    {
+                        stagdelay -= Time.deltaTime;
+                        if (stagdelay <= 0)
+                        {
+                            staggering = false;
+                            stagdelay = 0.25f;
+                        }
+                    }
+                    else { delay -= Time.deltaTime; }
+
+                    if (delay <= 0)
+                    {
+                        HitDammit();
+                        delay = 0.5f;
+                    }
+                    break;
+                case type.shield:
+                    if (staggering)
+                    {
+                        stagdelay -= Time.deltaTime;
+                        if (stagdelay <= 0)
+                        {
+                            staggering = false;
+                            stagdelay = 0.5f;
+                        }
+                    }
+                    else { delay -= Time.deltaTime; }
+
+                    if (delay <= 0)
+                    {
+                        HitDammit();
+                        delay = 1.0f;
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
-        else 
-		{
-			WalkAnimation();
+        else {
+            WalkAnimation();
             float step = speed * Time.deltaTime;
-			transform.position = Vector3.MoveTowards(transform.position, killingzone.transform.position + offsetOfKillZone, step);
+            transform.position = Vector3.MoveTowards(transform.position, killingzone.transform.position + offsetOfKillZone, step);
         }
         CheckCondition();
 	}
 
     public void Damage(int dmg)
-	{
-		if (!target.GetComponent<PlayerScript> ().isDodging)
-		{
-			health -= dmg;
-		}
+    {
+        switch (enemytype)
+        {
+            case type.basic:
+                if (!target.GetComponent<PlayerScript>().isDodging)
+                {
+                    health -= dmg;
+                }
+                break;
+            case type.puukko:
+                if (!target.GetComponent<PlayerScript>().isDodging)
+                {
+                    health -= dmg;
+                }
+                break;
+            case type.shield:
+                if (!target.GetComponent<PlayerScript>().isDodging)
+                {
+                    health -= dmg;
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     void CheckCondition() {
@@ -78,11 +195,37 @@ public class EnemyBehavior : MonoBehaviour {
     }
 
     void HitDammit() {
-		if(!target.GetComponent<PlayerScript>().isDodging)
-		{
-			target.GetComponent<PlayerScript>().GetDamage();
-		}
-		StartCoroutine ("PunchAnim");
+        switch (enemytype)
+        {
+            case type.basic:
+                if(!target.GetComponent<PlayerScript>().isDodging)
+                {
+                    target.GetComponent<PlayerScript>().GetDamage();
+                    Debug.Log("Now, that's just embarrassing. NORMIE");
+                }
+                StartCoroutine ("PunchAnim");
+                break;
+            case type.puukko:
+                if (!target.GetComponent<PlayerScript>().isDodging)
+                {
+                    staggering = false;
+                    target.GetComponent<PlayerScript>().GetDamage();
+                    Debug.Log("Now, that's just embarrassing. PUUKKO");
+                }
+                else { staggering = true; }
+                StartCoroutine ("PunchAnim");
+                break;
+            case type.shield:
+                if (!target.GetComponent<PlayerScript>().isDodging)
+                {
+                    staggering = true;
+                    target.GetComponent<PlayerScript>().GetDamage();
+                    Debug.Log("Now, that's just embarrassing. SHIELD");
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     void OnCollisionEnter(Collision other) {
@@ -105,36 +248,38 @@ public class EnemyBehavior : MonoBehaviour {
             inPosition = false;
         }
     }
-	void WalkAnimation()
-	{
-		walkTimer += Time.deltaTime;
-		
-		if (timeBetweenSprites_walk <= walkTimer) {
-			walkIndex++;
-			
-			if(sprites.Length <= walkIndex)
-			{
-				walkIndex = 0;
-			}
-			
-			gameObject.GetComponent<SpriteRenderer>().sprite = sprites[walkIndex];
-			walkTimer = 0;
-		}
-	}
 
-	IEnumerator PunchAnim()
-	{
-		var startColor = GetComponent<SpriteRenderer> ().color;
-		float colorVar = 0.75f;
-		GetComponent<SpriteRenderer> ().color = new Color(1f, colorVar, colorVar);
+    void WalkAnimation()
+    {
+        walkTimer += Time.deltaTime;
 
-		while (GetComponent<SpriteRenderer> ().color.g < 1f)
-		{
-			colorVar += Time.deltaTime * 1.25f;
-			GetComponent<SpriteRenderer> ().color = new Color(1f, colorVar, colorVar);
-			yield return null;
-		}
+        if (timeBetweenSprites_walk <= walkTimer)
+        {
+            walkIndex++;
 
-		yield return null;
-	}
+            if (sprites.Length <= walkIndex)
+            {
+                walkIndex = 0;
+            }
+
+            gameObject.GetComponent<SpriteRenderer>().sprite = sprites[walkIndex];
+            walkTimer = 0;
+        }
+    }
+
+    IEnumerator PunchAnim()
+    {
+        var startColor = GetComponent<SpriteRenderer>().color;
+        float colorVar = 0.75f;
+        GetComponent<SpriteRenderer>().color = new Color(1f, colorVar, colorVar);
+
+        while (GetComponent<SpriteRenderer>().color.g < 1f)
+        {
+            colorVar += Time.deltaTime * 1.25f;
+            GetComponent<SpriteRenderer>().color = new Color(1f, colorVar, colorVar);
+            yield return null;
+        }
+
+        yield return null;
+    }
 }
