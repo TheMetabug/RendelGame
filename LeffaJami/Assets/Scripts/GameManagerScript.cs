@@ -12,7 +12,7 @@ public class GameManagerScript : MonoBehaviour
 	
 	void Update () 
 	{
-		
+
 	}
 
 	public void SwitchState(int index)

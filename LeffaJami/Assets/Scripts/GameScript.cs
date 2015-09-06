@@ -17,6 +17,18 @@ public class GameScript : MonoBehaviour
 	{
         scoreText.text = "Score: " + score;
 	}
+
+	void Reset ()
+	{
+		playerObj.Reset ();
+		for (int i = 0; i < enemySpawner.transform.childCount; i++) 
+		{
+			if(enemies[i] != null)
+				Destroy(enemies[i]);
+			enemies[i] = null;
+		}
+
+	}
 	
 	void Update ()
 	{
@@ -40,7 +52,7 @@ public class GameScript : MonoBehaviour
 		{
 			manager.SwitchState (0);
 		}
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space) || playerObj.isDead)
 		{
 			GameOver();
 		}
@@ -169,6 +181,7 @@ public class GameScript : MonoBehaviour
 	
 	public void GameOver()
 	{
+		Reset ();
 		manager.SwitchState (2);
 	}
 }

@@ -9,6 +9,8 @@ public class PlayerScript : MonoBehaviour
 	public bool isPunchingEnemy;
 	public bool isPunchingAir;
 	public bool isPunching;
+	public bool isDead;
+	public bool isDying;
 
 	private Vector3 startPosition;
 	private Vector3 dodgePosition;
@@ -19,7 +21,7 @@ public class PlayerScript : MonoBehaviour
 		Reset ();
 	}
 
-	void Reset()
+	public void Reset()
 	{
 		startPosition = transform.localPosition;
 		isDodging = false;
@@ -28,18 +30,28 @@ public class PlayerScript : MonoBehaviour
 		isPunchingAir = false;
 		isPunching = false;
 		hitEnemy = false;
+		isDead = false;
+		isDying = false;
 
 		GameVariables.PlayerHealth = 3;
 	}
 
 	void Update () 
 	{
-		
+		GameVariables.PlayerHealth = health;
 	}
 
 	public void GetDamage()
 	{
 		StartCoroutine ("HurtAnimation");
+	}
+
+	public void Death()
+	{
+		if (!isDying && !isDead) {
+			isDying = true;
+			StartCoroutine("DeathAnimation");
+		}
 	}
 
 	public void Dodge(bool isRightSide)
@@ -76,6 +88,20 @@ public class PlayerScript : MonoBehaviour
 			GetComponent<SpriteRenderer> ().color = new Color(1f,colorVar,colorVar, startColor.a);
 			yield return null;
 		}
+		
+		yield return null;
+	}
+	IEnumerator DeathAnimation()
+	{	
+		while (isDying) {
+			if (transform.localPosition.y > startPosition.y - 4f) {
+				transform.localPosition = Vector3.Lerp (transform.localPosition, new Vector3 (0, -8f, 0), Time.deltaTime * 2f);
+			} else {
+				isDying = false;
+			}
+		}
+
+		isDead = true;
 		
 		yield return null;
 	}

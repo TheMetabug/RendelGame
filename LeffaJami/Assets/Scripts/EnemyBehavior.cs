@@ -285,7 +285,7 @@ public class EnemyBehavior : MonoBehaviour {
         yield return null;
     }
 
-    public void setEnum(int integer)
+	public void setEnum(type integer)
     {
         switch (integer)
         {
@@ -295,7 +295,7 @@ public class EnemyBehavior : MonoBehaviour {
             case type.puukko:
                 enemytype = type.puukko;
                 break;
-            case tpe.shield:
+            case type.shield:
                 enemytype = type.shield;
                 break;
             default:
