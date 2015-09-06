@@ -8,9 +8,14 @@ public class Highscore : MonoBehaviour
     public List<int> highscores;
     public List<string> names;
     public GameObject mainMenu;
+
+	private GUIStyle styleForList;
+
 	void Start ()
     {
         Load();
+		styleForList = new GUIStyle ();
+		styleForList.fontSize = 50;
 	}
 	
 	void Update ()
@@ -67,8 +72,8 @@ public class Highscore : MonoBehaviour
     {
         for (int i = 0; i < 15; i++)
         {
-            GUI.Label(new Rect(10, 200+25 * i, 200, 20), (i+1) + ". " + names[i]);
-            GUI.Label(new Rect(250, 200+25 * i, 100, 20), highscores[i].ToString());
+			GUI.Label(new Rect(10, 100 + 55 * i, 200, 20), (i+1) + ". " + names[i], styleForList);
+			GUI.Label(new Rect(250, 100 + 55 * i, 100, 20), highscores[i].ToString(), styleForList);
         }
     }
 

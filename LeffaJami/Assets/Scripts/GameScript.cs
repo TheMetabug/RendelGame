@@ -8,6 +8,7 @@ public class GameScript : MonoBehaviour
 	public GameObject uiInterface;
 	public PlayerScript playerObj;
 	public Spawner enemySpawner;
+	public SoundContainerScript soundContainer;
 
 	public EnemyBehavior[] enemies = new EnemyBehavior[10];
     public Text scoreText;
@@ -129,7 +130,9 @@ public class GameScript : MonoBehaviour
 		}
 		if (enemy.inPosition) {
 			//enemy.Damage (1);
-			HitEnemy(enemy);
+			HitEnemy (enemy);
+		} else {
+			soundContainer.PlayAudio(SoundContainerScript.audioClips.miss);
 		}
 		yield return null;
 	}
@@ -140,12 +143,21 @@ public class GameScript : MonoBehaviour
 		{
 		case EnemyBehavior.type.basic:
 			enemy.Damage(1);
+			soundContainer.PlayAudio(SoundContainerScript.audioClips.hit);
 			break;
 		case EnemyBehavior.type.puukko:
-			if(enemy.staggering) enemy.Damage(1);
+			if(enemy.staggering)
+			{
+				enemy.Damage(1);
+				soundContainer.PlayAudio(SoundContainerScript.audioClips.hit);
+			}
 			break;
 		case EnemyBehavior.type.shield:
-			if (enemy.staggering) enemy.Damage(1);
+			if(enemy.staggering)
+			{
+				enemy.Damage(1);
+				soundContainer.PlayAudio(SoundContainerScript.audioClips.hit);
+			}
 			else { enemy.staggering = true; }
 			break;
 		default:
