@@ -18,6 +18,8 @@ public class Spawner : MonoBehaviour {
         if (time <= 0 && transform.childCount < maxEnemies) 
 		{
             GameObject newEnemy = Instantiate(enemy, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
+            //random in range(0-2)
+            //newEnemy.setEnum(rand);
 			newEnemy.transform.parent = transform;
 			newEnemy.GetComponent<EnemyBehavior>().offsetOfKillZone = new Vector3(Random.Range(-1.0f,1.0f),0,0);
             time = spawntime;

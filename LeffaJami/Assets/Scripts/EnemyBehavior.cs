@@ -284,4 +284,22 @@ public class EnemyBehavior : MonoBehaviour {
 
         yield return null;
     }
+
+    public void setEnum(int integer)
+    {
+        switch (integer)
+        {
+            case type.basic:
+                enemytype = type.basic;
+                break;
+            case type.puukko:
+                enemytype = type.puukko;
+                break;
+            case tpe.shield:
+                enemytype = type.shield;
+                break;
+            default:
+                break;
+        }
+    }
 }
