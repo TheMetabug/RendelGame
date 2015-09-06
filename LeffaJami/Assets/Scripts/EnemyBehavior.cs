@@ -8,10 +8,12 @@ public class EnemyBehavior : MonoBehaviour {
     public float hitspeed;
     public float delay;
     public float stagdelay;
+    float deathtimer;
     public bool hit;
     public bool inPosition;
     public bool flipflop;
     public bool staggering;
+    bool once;
 
     public Vector3 offsetOfKillZone = new Vector3();
 
@@ -64,8 +66,8 @@ public class EnemyBehavior : MonoBehaviour {
             default:
                 break;
         }
-
-
+        deathtimer = 3.0f;
+        once = true;
         killingzone = GameObject.FindGameObjectWithTag("KZ");
         target = GameObject.FindGameObjectWithTag("Player");
     }
@@ -192,7 +194,16 @@ public class EnemyBehavior : MonoBehaviour {
 
     void CheckCondition() {
         if (health <= 0) {
-            Destroy(gameObject);
+            if (once)
+            {
+                iamkill();
+                once = false;
+            }
+            deathtimer -= Time.deltaTime;
+            if (deathtimer <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -285,21 +296,29 @@ public class EnemyBehavior : MonoBehaviour {
         yield return null;
     }
 
-	public void setEnum(type integer)
+    public void setEnum(int integer)
     {
         switch (integer)
         {
-            case type.basic:
+            case 0:
                 enemytype = type.basic;
                 break;
-            case type.puukko:
+            case 1:
                 enemytype = type.puukko;
                 break;
-            case type.shield:
+            case 2:
                 enemytype = type.shield;
                 break;
             default:
+                enemytype = type.basic;
                 break;
         }
+    }
+
+    void iamkill()
+    {
+        GetComponent<Rigidbody>().angularVelocity = new Vector3(Random.Range(-6, 6), Random.Range(-6, 6), Random.Range(-6, 6));
+        GetComponent<Rigidbody>().AddForce(new Vector3 (Random.Range(-10, 10), Random.Range(1, 50), Random.Range(30, 50)), ForceMode.VelocityChange);
+        GetComponent<Rigidbody>().useGravity = true;
     }
 }
