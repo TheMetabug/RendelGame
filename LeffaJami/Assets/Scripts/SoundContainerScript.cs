@@ -7,7 +7,8 @@ public class SoundContainerScript : MonoBehaviour {
 
 	public enum audioClips {
 		hit,
-		miss
+		miss,
+		ai
 	};
 
 	void Start () 
@@ -30,8 +31,12 @@ public class SoundContainerScript : MonoBehaviour {
 		case audioClips.miss:
 			GetComponent<AudioSource>().clip = clips[1];
 			break;
+		case audioClips.ai:
+			GetComponent<AudioSource>().PlayOneShot(clips[2]);
+			break;
 		}
-
+		
 		GetComponent<AudioSource> ().Play ();
+
 	}
 }

@@ -25,6 +25,7 @@ public class EnemyBehavior : MonoBehaviour {
     private float walkTimer = 0;
     private int walkIndex = 0;
 	private int spriteIndex = 0;
+	private SoundContainerScript soundContainer;
 
     public enum type
     {
@@ -74,6 +75,7 @@ public class EnemyBehavior : MonoBehaviour {
         once = true;
         killingzone = GameObject.FindGameObjectWithTag("KZ");
         target = GameObject.FindGameObjectWithTag("Player");
+		soundContainer = GameObject.Find ("SoundContainer").GetComponent<SoundContainerScript>();
     }
 
 	void Update () {
@@ -341,5 +343,6 @@ public class EnemyBehavior : MonoBehaviour {
         GetComponent<Rigidbody>().angularVelocity = new Vector3(Random.Range(-6, 6), Random.Range(-6, 6), Random.Range(-6, 6));
         GetComponent<Rigidbody>().AddForce(new Vector3 (Random.Range(-10, 10), Random.Range(1, 50), Random.Range(30, 50)), ForceMode.VelocityChange);
         GetComponent<Rigidbody>().useGravity = true;
+		soundContainer.PlayAudio (SoundContainerScript.audioClips.ai);
     }
 }
