@@ -9,7 +9,7 @@ public class GameScript : MonoBehaviour
 	public Spawner enemySpawner;
 
 	public EnemyBehavior[] enemies = new EnemyBehavior[10];
-	
+
 	void Start ()
 	{
 		
@@ -18,6 +18,7 @@ public class GameScript : MonoBehaviour
 	void Update ()
 	{
 		GameInput ();
+		GetEnemies ();
 	}
 
 	private void GetEnemies()
@@ -61,16 +62,59 @@ public class GameScript : MonoBehaviour
 
 	private void CheckIfHitEnemy()
 	{
-		/*
 		for (int i = 0; i < enemies.Length; i++) 
 		{	
-			if (Mathf.Abs(Input.mousePosition.x - Camera.main.WorldToScreenPoint(transform.position).x) < 140) 
+			if(enemies[i] != null)
 			{
-				Damage(1);
+				if (Mathf.Abs(Input.mousePosition.x - Camera.main.WorldToScreenPoint(enemies[i].transform.position).x) < 140 &&
+				    enemies[i].inPosition) 
+				{
+					if(enemies[i].transform.position.x < 0)
+					{
+						playerObj.Punch(false, true);
+					}
+					else
+					{
+						playerObj.Punch(true, true);
+					}
+					StartCoroutine("makePlayerHitEnemyWhenDone", enemies[i]);
+				}
+				else
+				{
+					if(enemies[i].transform.position.x < 0)
+					{
+						playerObj.Punch(false, false);
+					}
+					else
+					{
+						playerObj.Punch(true, false);
+					}
+					StartCoroutine("checkIfPlayerHitsEnemyWhileMissing", enemies[i]);
+				}
 			}
-		}*/
-
+		}
 	}
+
+	IEnumerator makePlayerHitEnemyWhenDone(EnemyBehavior enemy)
+	{
+		while (playerObj.isPunchingEnemy) {
+			yield return null;
+		}
+		enemy.Damage(1);
+		yield return null;
+	}
+	IEnumerator checkIfPlayerHitsEnemyWhileMissing(EnemyBehavior enemy)
+	{
+		while (playerObj.isPunchingAir) {
+			yield return null;
+		}
+		if (enemy.inPosition) {
+			enemy.Damage (1);
+		}
+		yield return null;
+	}
+
+
 
 	public void GameOver()
 	{

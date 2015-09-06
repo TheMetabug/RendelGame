@@ -7,7 +7,6 @@ public class EnemyBehavior : MonoBehaviour {
     public float speed;
     public float hitspeed;
     public float delay;
-    public float stagdelay;
     public bool hit;
     public bool inPosition;
     public bool flipflop;
@@ -33,38 +32,12 @@ public class EnemyBehavior : MonoBehaviour {
     public type enemytype;
 
 	void Start () {
-        switch (enemytype)
-        {
-            case type.basic:
-                health = 1;
-                hit = false;
-                speed = 8.0f;
-                hitspeed = 3.0f; // Ei käytetä tällä hetkellä missään
-                delay = 0.5f;
-                staggering = false;
-                break;
-            case type.puukko:
-                health = 1;
-                hit = false;
-                speed = 7.0f;
-                hitspeed = 3.0f; // Vois olla hyvä ottaa käyttöön
-                delay = 0.75f;
-                stagdelay = 0.25f;
-                staggering = false;
-                break;
-            case type.shield:
-                health = 1;
-                hit = false;
-                speed = 4.0f;
-                hitspeed = 3.0f; // Sais eri vihollisille erimittaiset lyöntivälit
-                delay = 1.0f;
-                stagdelay = 0.5f;
-                staggering = false;
-                break;
-            default:
-                break;
-        }
-
+        health = 1;
+        hit = false;
+        speed = 8.0f;
+        hitspeed = 3.0f;
+        delay = 0.5f;
+        staggering = false;
 
         killingzone = GameObject.FindGameObjectWithTag("KZ");
         target = GameObject.FindGameObjectWithTag("Player");
@@ -84,29 +57,18 @@ public class EnemyBehavior : MonoBehaviour {
                             if(staggering) Damage(1);
                             break;
                         case type.shield:
-                            if (staggering) Damage(1);
-                            else { staggering = true; }
+                            //something is happening
                             break;
                         default:
                             break;
                     }
                 }
             }
-
+            delay -= Time.deltaTime;
+            
             switch (enemytype)
             {
                 case type.basic:
-                    if (staggering)
-                    {
-                        stagdelay -= Time.deltaTime;
-                        if (stagdelay <= 0)
-                        {
-                            staggering = false;
-                            stagdelay = 0;
-                        }
-                    }
-                    else { delay -= Time.deltaTime; }
-
                     if (delay <= 0)
                     {
                         HitDammit();
@@ -114,40 +76,18 @@ public class EnemyBehavior : MonoBehaviour {
                     }
                     break;
                 case type.puukko:
-                    if (staggering)
+                    if (delay <= 0.15f)
                     {
-                        stagdelay -= Time.deltaTime;
-                        if (stagdelay <= 0)
+                        staggering = false;
+                        if (delay <= 0)
                         {
-                            staggering = false;
-                            stagdelay = 0.25f;
+                            HitDammit();
+                            delay = 0.5f;
                         }
-                    }
-                    else { delay -= Time.deltaTime; }
-
-                    if (delay <= 0)
-                    {
-                        HitDammit();
-                        delay = 0.5f;
                     }
                     break;
                 case type.shield:
-                    if (staggering)
-                    {
-                        stagdelay -= Time.deltaTime;
-                        if (stagdelay <= 0)
-                        {
-                            staggering = false;
-                            stagdelay = 0.5f;
-                        }
-                    }
-                    else { delay -= Time.deltaTime; }
-
-                    if (delay <= 0)
-                    {
-                        HitDammit();
-                        delay = 1.0f;
-                    }
+                    //shield is evolving
                     break;
                 default:
                     break;
@@ -163,28 +103,9 @@ public class EnemyBehavior : MonoBehaviour {
 
     public void Damage(int dmg)
     {
-        switch (enemytype)
+        if (!target.GetComponent<PlayerScript>().isDodging)
         {
-            case type.basic:
-                if (!target.GetComponent<PlayerScript>().isDodging)
-                {
-                    health -= dmg;
-                }
-                break;
-            case type.puukko:
-                if (!target.GetComponent<PlayerScript>().isDodging)
-                {
-                    health -= dmg;
-                }
-                break;
-            case type.shield:
-                if (!target.GetComponent<PlayerScript>().isDodging)
-                {
-                    health -= dmg;
-                }
-                break;
-            default:
-                break;
+            health -= dmg;
         }
     }
 
@@ -201,7 +122,7 @@ public class EnemyBehavior : MonoBehaviour {
                 if(!target.GetComponent<PlayerScript>().isDodging)
                 {
                     target.GetComponent<PlayerScript>().GetDamage();
-                    Debug.Log("Now, that's just embarrassing. NORMIE");
+                    Debug.Log("Now, that's just embarrassing.");
                 }
                 StartCoroutine ("PunchAnim");
                 break;
@@ -210,18 +131,13 @@ public class EnemyBehavior : MonoBehaviour {
                 {
                     staggering = false;
                     target.GetComponent<PlayerScript>().GetDamage();
-                    Debug.Log("Now, that's just embarrassing. PUUKKO");
+                    Debug.Log("Now, that's just embarrassing.");
                 }
                 else { staggering = true; }
                 StartCoroutine ("PunchAnim");
                 break;
             case type.shield:
-                if (!target.GetComponent<PlayerScript>().isDodging)
-                {
-                    staggering = true;
-                    target.GetComponent<PlayerScript>().GetDamage();
-                    Debug.Log("Now, that's just embarrassing. SHIELD");
-                }
+                //Shield evolved into metapod
                 break;
             default:
                 break;
