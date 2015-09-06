@@ -24,7 +24,7 @@ public class GameScript : MonoBehaviour
 	{
 		for (int i = 0; i < enemySpawner.transform.childCount; i++) 
 		{
-			enemies[i] = enemySpawner.gameObject.transform.GetChild(i);
+			enemies[i] = enemySpawner.transform.GetChild(i).GetComponent<EnemyBehavior>();
 		}
 	}
 
