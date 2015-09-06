@@ -11,7 +11,7 @@ public class GameScript : MonoBehaviour
 
 	public EnemyBehavior[] enemies = new EnemyBehavior[10];
     public Text scoreText;
-    public float score = 100;
+    public float score = 0;
 	void Start ()
 	{
         scoreText.text = "Score: " + score;
@@ -52,6 +52,7 @@ public class GameScript : MonoBehaviour
 
 	private void CheckIfHitDodgeButton()
 	{
+		/*
 		if (Mathf.Abs(Input.mousePosition.x - Camera.main.WorldToScreenPoint (uiInterface.transform.GetChild (0).transform.position).x) < 35 &&
 		    Mathf.Abs(Input.mousePosition.y - Camera.main.WorldToScreenPoint (uiInterface.transform.GetChild (0).transform.position).y) < 35) 
 		{
@@ -61,7 +62,20 @@ public class GameScript : MonoBehaviour
 		    Mathf.Abs(Input.mousePosition.y - Camera.main.WorldToScreenPoint (uiInterface.transform.GetChild (1).transform.position).y) < 35) 
 		{
 			playerObj.Dodge (true);
-		} 
+		} */
+
+		Bounds mouseBounds = new Bounds (Input.mousePosition, new Vector3 (65.2f, 65.2f, 65.2f));
+		Bounds debugBounds_0 = new Bounds (Camera.main.WorldToScreenPoint (uiInterface.transform.GetChild (0).transform.localPosition), new Vector3 (65.2f, 65.2f, 65.2f));
+		Bounds debugBounds_1 = new Bounds (Camera.main.WorldToScreenPoint (uiInterface.transform.GetChild (1).transform.localPosition), new Vector3 (65.2f, 65.2f, 65.2f));
+
+		if (debugBounds_0.Intersects(mouseBounds))
+		{
+			playerObj.Dodge (false);
+		}
+		else if (debugBounds_1.Intersects(mouseBounds))
+		{
+			playerObj.Dodge (true);
+		}
 	}
 
 	private void CheckIfHitEnemy()
@@ -70,7 +84,7 @@ public class GameScript : MonoBehaviour
 		{	
 			if(enemies[i] != null)
 			{
-				if (Mathf.Abs(Input.mousePosition.x - Camera.main.WorldToScreenPoint(enemies[i].transform.position).x) < 140 &&
+				if (Mathf.Abs(Input.mousePosition.x - Camera.main.WorldToScreenPoint(enemies[i].transform.position).x) < 280 &&
 				    enemies[i].inPosition) 
 				{
 					if(enemies[i].transform.position.x < 0)
@@ -122,22 +136,20 @@ public class GameScript : MonoBehaviour
 
 	private void HitEnemy(EnemyBehavior enemy)
 	{
-		if (Vector2.Distance(Input.mousePosition , Camera.main.WorldToScreenPoint(transform.position)) < 250) {
-			switch (enemy.enemytype)
-			{
-			case EnemyBehavior.type.basic:
-				enemy.Damage(1);
-				break;
-			case EnemyBehavior.type.puukko:
-				if(enemy.staggering) enemy.Damage(1);
-				break;
-			case EnemyBehavior.type.shield:
-				if (enemy.staggering) enemy.Damage(1);
-				else { enemy.staggering = true; }
-				break;
-			default:
-				break;
-			}
+		switch (enemy.enemytype)
+		{
+		case EnemyBehavior.type.basic:
+			enemy.Damage(1);
+			break;
+		case EnemyBehavior.type.puukko:
+			if(enemy.staggering) enemy.Damage(1);
+			break;
+		case EnemyBehavior.type.shield:
+			if (enemy.staggering) enemy.Damage(1);
+			else { enemy.staggering = true; }
+			break;
+		default:
+			break;
 		}
 	}
 	
