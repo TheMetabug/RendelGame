@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GameScript : MonoBehaviour
@@ -9,16 +10,19 @@ public class GameScript : MonoBehaviour
 	public Spawner enemySpawner;
 
 	public EnemyBehavior[] enemies = new EnemyBehavior[10];
-
+    public Text scoreText;
+    public float score = 100;
 	void Start ()
 	{
-		
+        scoreText.text = "Score: " + score;
 	}
 	
 	void Update ()
 	{
 		GameInput ();
 		GetEnemies ();
+        score += 1 * Time.deltaTime;
+        scoreText.text = "Score: " + score;
 	}
 
 	private void GetEnemies()

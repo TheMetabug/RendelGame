@@ -7,7 +7,7 @@ public class Highscore : MonoBehaviour
 {
     public List<int> highscores;
     public List<string> names;
-
+    public GameObject mainMenu;
 	void Start ()
     {
         Load();
@@ -15,9 +15,10 @@ public class Highscore : MonoBehaviour
 	
 	void Update ()
     {
-	    if (Input.GetKey(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            //activate main menu and disable highscore
+            mainMenu.SetActive(true);
+            gameObject.SetActive(false);
         }
 	}
 
