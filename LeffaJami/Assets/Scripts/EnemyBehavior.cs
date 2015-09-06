@@ -73,8 +73,9 @@ public class EnemyBehavior : MonoBehaviour {
 	void Update () {
         if (inPosition) {
             //foreach (Touch touch in Input.touches) {
-            if(Input.GetMouseButtonDown(0)) {    
-                if (Vector2.Distance(/*touch.position*/Input.mousePosition , Camera.main.WorldToScreenPoint(transform.position)) < 250) {
+            /*
+			if(Input.GetMouseButtonDown(0)) {    
+                if (Vector2.Distance(Input.mousePosition , Camera.main.WorldToScreenPoint(transform.position)) < 250) {
                     switch (enemytype)
                     {
                         case type.basic:
@@ -92,6 +93,7 @@ public class EnemyBehavior : MonoBehaviour {
                     }
                 }
             }
+			*/
 
             switch (enemytype)
             {
